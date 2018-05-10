@@ -1,35 +1,46 @@
 package projtranspalim;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 
 /**
  *
  * @author billy
  */
 public class Roteador extends Agent{
-	private MessageTemplate template = MessageTemplate.and(
-		MessageTemplate.MatchPerformative(ACLMessage.QUERY_IF),
-		MessageTemplate.MatchOntology("presenca") );
-		
+
 	protected void setup() {          
 		addBehaviour(new CyclicBehaviour(this) {
 			public void action() {
-				ACLMessage msg = myAgent.receive(template);
+				ACLMessage msg = myAgent.receive();
 				if (msg != null) {
-					System.out.println("Recebido QUERY_IF de "+msg.getSender().getName());
+                                        System.out.println("==(Roteador) Mensagem <- "+msg.getContent()+" de " +msg.getSender().getName());
 					ACLMessage reply = msg.createReply();
 					if ("vivo".equals(msg.getContent())) {
 						reply.setPerformative(ACLMessage.INFORM);
 						reply.setContent("vivo");
 					}
+                                        else if(msg.getContent().startsWith("rota")) {
+                                            System.out.println("=>(Roteador) Agente Roteador iniciado.");
+                                            reply.setPerformative(ACLMessage.INFORM);
+                                            reply.setContent("hold");                                                                                        
+                                            checarRotasControlador(msg.getContent().split(" ")[1], msg.getContent().split(" ")[2]);
+                                        }
+                                        else if(msg.getContent().startsWith("r_resp")) {
+                                            //reply.setPerformative(ACLMessage.INFORM);
+                                            //reply.setContent("true");
+                                            if(msg.getContent().split(" ")[1].equals("true")) {
+                                                enviarRotaTransportador();
+                                            }
+                                        }
 					else {
 						reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
-						reply.setContent("mess-desconhecida");
+						reply.setContent("unk");
 					}
-					myAgent.send(reply);
+					if(reply.getContent() != null)
+                                            myAgent.send(reply);
 				}
 				else {
 					block();
@@ -37,4 +48,23 @@ public class Roteador extends Agent{
 			}
 		} );
 	}
+        
+        protected void checarRotasControlador(String pos1, String pos2) {
+            enviarMensagem("r_problemas " + pos1 + " " + pos2, "verificacao", "Controlador");
+        }               
+        
+        protected void enviarRotaTransportador() {
+            enviarMensagem("rota rota7", "inform", "Transportador");
+        }
+        
+        protected void enviarMensagem(String content, String ontology, String agent) {
+            ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
+            msg.setContent(content);
+            msg.setProtocol("fipa-request");
+            msg.setOntology(ontology);
+            AID ag = new AID(agent, AID.ISLOCALNAME);
+            msg.addReceiver(ag);
+            System.out.println("==(Roteador) Mensagem -> " + msg.getContent() + " para " + ag.getLocalName());
+            send(msg);
+        }
 }

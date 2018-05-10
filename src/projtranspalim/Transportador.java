@@ -9,10 +9,7 @@ import jade.lang.acl.ACLMessage;
  *
  * @author billy
  */
-public class Transportador extends Agent{	
-    
-        public boolean onJob = false;
-        
+public class Transportador extends Agent{	            
 	protected void setup() {          
 		addBehaviour(new CyclicBehaviour(this) {
 			public void action() {
@@ -20,29 +17,37 @@ public class Transportador extends Agent{
 				if (msg != null) {
 					System.out.println("==(Transportador) Mensagem <- "+msg.getContent()+" de " +msg.getSender().getName());
 					ACLMessage reply = msg.createReply();
-					if (null == msg.getContent()) {
-                                            reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
-                                            reply.setContent("mens-desconhecida");
-                                        }
+		
 					if(msg.getContent().startsWith("vivo")) {
                                             reply.setPerformative(ACLMessage.INFORM);
                                             reply.setContent("true");
                                         }
                                         else if(msg.getContent().startsWith("iniciar")) {
-                                            if(!onJob) {
                                                 System.out.println("=>(Transportador) Agente Transportador iniciado.");
-                                                reply.setPerformative(ACLMessage.INFORM);
+                                                reply.setPerformative(ACLMessage.REQUEST);
                                                 reply.setContent("true");
-                                                requestCarregador();
-                                            }
+                                                pedirRotaRoteador();                                 
                                         }
-                                        else if("true".equals(msg.getContent())) {
-                                            System.out.println("==(Transportador) recebeu uma resposta true de " + msg.getSender().getName() + " e agora está em stand-by.");
+                                        else if(msg.getContent().startsWith("hold")) {
+                                            System.out.println("==(Transportador) recebeu uma resposta hold de " + msg.getSender().getName() + " e agora está aguardando resposta.");
+                                        }
+                                        else if(msg.getContent().startsWith("release")) {
+                                            System.out.println("==(Transportador) recebeu um release de " +msg.getSender().getName()+" e agora está livre.");
+                                        }
+                                        else if(msg.getContent().startsWith("carregado")) {
+                                            System.out.println("==(Transportador) foi carregado com as caixas e está a caminho.");                                            
+                                            System.out.println("==(Transportador) O Transportador alcançou o final de sua rota.");
+                                            informarDescarregador();
+                                        }
+                                        else if(msg.getContent().startsWith("rota")) {
+                                            System.out.println("==(Transportador) recebeu a rota " + msg.getContent().split(" ")[1] + " do Roteador.");
+                                            pedirCarregador();
                                         }
                                         else {
                                             reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
-                                            reply.setContent("mens-desconhecida");                                            
-                                        }                   
+                                            reply.setContent("unk");                                            
+                                        }        
+                                        
                                         if(reply.getContent() != null)
                                             myAgent.send(reply);
 				}
@@ -53,19 +58,26 @@ public class Transportador extends Agent{
 		} );
 	}
         
-        protected void requestCarregador() {
-            sendMessage("iniciar 300 4", "trabalho", "Carregador");
+        protected void pedirCarregador() {
+            enviarMensagem("iniciar 300 7", "trabalho", "Carregador");
         }
         
-        protected void sendMessage(String content, String ontology, String agent) {
+        protected void informarDescarregador() {
+            enviarMensagem("volume 300", "trabalho", "Descarregador");
+        }
+        
+        protected void pedirRotaRoteador() {
+            enviarMensagem("rota 3 5", "trabalho", "Roteador");
+        }
+        
+        protected void enviarMensagem(String content, String ontology, String agent) {
             ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
             msg.setContent(content);
             msg.setProtocol("fipa-request");
             msg.setOntology(ontology);
             AID ag = new AID(agent, AID.ISLOCALNAME);
             msg.addReceiver(ag);
-            send(msg);
             System.out.println("==(Transportador) Mensagem -> " + msg.getContent() + " para " + ag.getLocalName());
-            onJob = true;
-    }
+            send(msg);
+        }
 }
