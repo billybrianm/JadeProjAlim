@@ -1,11 +1,12 @@
 package projtranspalim;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 
 /**
- *
+ * @v1.0.0
  * @author billy
  */
 public class Carregador extends Agent{

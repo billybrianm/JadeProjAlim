@@ -7,7 +7,7 @@ import jade.lang.acl.ACLMessage;
 
 
 /**
- *
+ * @v1.0.0
  * @author billy
  */
 public class Controlador extends Agent {
