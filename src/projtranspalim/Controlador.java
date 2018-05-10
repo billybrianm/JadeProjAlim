@@ -7,7 +7,7 @@ import jade.lang.acl.ACLMessage;
 
 
 /**
- * @v1.0.0
+ * @v2.0.0
  * @author billy
  */
 public class Controlador extends Agent {
@@ -24,7 +24,7 @@ public class Controlador extends Agent {
                     + " de " + msg.getSender().getName());
                 
                     if("true".equals(msg.getContent())) {
-                        System.out.println("==(Controlador) recebeu uma resposta true de " + msg.getSender().getName() + " e agora está em stand-by.");
+                        //System.out.println("==(Controlador) recebeu uma resposta true de " + msg.getSender().getName() + " e agora está em stand-by.");
                     }
                     else if(msg.getContent().startsWith("r_problemas")) {
                         analisarRota(msg.getContent().split(" ")[1], msg.getContent().split(" ")[2]);
@@ -38,11 +38,11 @@ public class Controlador extends Agent {
                 block();
             }
         });
-        startTransportador();
+        //startTransportador();
     }
     
     protected void startTransportador() {
-        sendMessage("iniciar", "trabalho", "Transportador");
+        sendMessage("iniciar 451 20 15", "trabalho", "Transportador");
     }
     
     protected void analisarRota(String pos1, String pos2) {

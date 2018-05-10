@@ -6,13 +6,13 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 
 /**
- * @v1.0.0
+ * @v2.0.0
  * @author billy
  */
 public class Carregador extends Agent{
     
     private int qtde;
-    private int idEstoque;
+    private String rota;
 	protected void setup() {          
 		addBehaviour(new CyclicBehaviour(this) {
 			public void action() {
@@ -31,8 +31,8 @@ public class Carregador extends Agent{
                                             reply.setContent("carregado");
                                             String[] s = msg.getContent().split(" ");
                                             qtde = Integer.parseInt(s[1]);
-                                            idEstoque = Integer.parseInt(s[2]);
-                                            System.out.println("=>(Carregador) " + qtde + " itens serão carregados ao estoque " + idEstoque);
+                                            rota = s[2];
+                                            System.out.println("=>(Carregador) " + qtde + " itens serão carregados ao estoque " + rota);
                                         }
                                         else if("true".equals(msg.getContent())) {
                                             System.out.println("==(Carregador) recebeu uma resposta true de " + msg.getSender().getName() + " e agora está em stand-by.");
