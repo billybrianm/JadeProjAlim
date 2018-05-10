@@ -6,7 +6,7 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 
 /**
- *
+ * @v1.0.0
  * @author billy
  */
 public class Transportador extends Agent{	            
@@ -30,6 +30,9 @@ public class Transportador extends Agent{
                                         }
                                         else if(msg.getContent().startsWith("hold")) {
                                             System.out.println("==(Transportador) recebeu uma resposta hold de " + msg.getSender().getName() + " e agora está aguardando resposta.");
+                                        }
+                                        else if(msg.getContent().startsWith("release")) {
+                                            System.out.println("==(Transportador) recebeu um release de " +msg.getSender().getName()+" e agora está livre.");
                                         }
                                         else if(msg.getContent().startsWith("carregado")) {
                                             System.out.println("==(Transportador) foi carregado com as caixas e está a caminho.");                                            
