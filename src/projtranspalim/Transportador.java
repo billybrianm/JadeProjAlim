@@ -23,10 +23,12 @@ public class Transportador extends Agent{
 					if (null == msg.getContent()) {
                                             reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
                                             reply.setContent("mens-desconhecida");
+                                            myAgent.send(reply);
                                         }
 					if(msg.getContent().startsWith("vivo")) {
                                             reply.setPerformative(ACLMessage.INFORM);
                                             reply.setContent("true");
+                                            myAgent.send(reply);
                                         }
                                         else if(msg.getContent().startsWith("iniciar")) {
                                             if(!onJob) {
@@ -34,6 +36,7 @@ public class Transportador extends Agent{
                                                 reply.setPerformative(ACLMessage.INFORM);
                                                 reply.setContent("true");
                                                 requestCarregador();
+                                                myAgent.send(reply);
                                             }
                                         }
                                         else if("true".equals(msg.getContent())) {
@@ -41,9 +44,10 @@ public class Transportador extends Agent{
                                         }
                                         else {
                                             reply.setPerformative(ACLMessage.NOT_UNDERSTOOD);
-                                            reply.setContent("mens-desconhecida");                                            
+                                            reply.setContent("mens-desconhecida"); 
+                                            myAgent.send(reply);
                                         }                                    
-					myAgent.send(reply);
+					
 				}
 				else {
 					block();
@@ -53,18 +57,18 @@ public class Transportador extends Agent{
 	}
         
         protected void requestCarregador() {
-            sendMessage("iniciar 20 4", "trabalho", "Carregador");
+            sendMessage("iniciar", "trabalho", "Carregador");
         }
         
         protected void sendMessage(String content, String ontology, String agent) {
-        ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
-        msg.setContent(content);
-        msg.setProtocol("fipa-request");
-        msg.setOntology(ontology);
-        AID ag = new AID(agent, AID.ISLOCALNAME);
-        msg.addReceiver(ag);
-        send(msg);
-        System.out.println("==(Transportador) Mensagem -> " + msg.getContent() + " para " + ag.getLocalName());
-        onJob = true;
+            ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
+            msg.setContent(content);
+            msg.setProtocol("fipa-request");
+            msg.setOntology(ontology);
+            AID ag = new AID(agent, AID.ISLOCALNAME);
+            msg.addReceiver(ag);
+            send(msg);
+            System.out.println("==(Transportador) Mensagem -> " + msg.getContent() + " para " + ag.getLocalName());
+            onJob = true;
     }
 }
